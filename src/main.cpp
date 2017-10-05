@@ -105,18 +105,17 @@ int main() {
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
 
-          // transform coordinates
-          Eigen::VectorXd new_x(6);
-          Eigen::VectorXd new_y(6);
+          Eigen::VectorXd ref_x(ptsx.size());
+          Eigen::VectorXd ref_y(ptsx.size());
 
+          // transform coordinates of the trajectory relative to the car position & orientation
           for (int i = 0; i < ptsx.size(); i++){
-              new_x[i] = (ptsx[i] - px)*cos(-psi) - (ptsy[i] - py)*sin(-psi);
-              new_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
-
+              ref_x[i] = (ptsx[i] - px)*cos(-psi) - (ptsy[i] - py)*sin(-psi);
+              ref_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
           }
 
           // fit polynomial 3rd order
-          auto coeffs = polyfit(new_x, new_y, 3); 
+          auto coeffs = polyfit(ref_x, ref_y, 3); 
 
 
           // calculate the next state vector
@@ -135,22 +134,34 @@ int main() {
 
           state << x_proj, y_proj, psi_proj, v, cte, epsi;
 
-          // Solve
-          vector<double> output_ = mpc.Solve(state, coeffs);
+          // apply mpc-solver to the state-vector
+          vector<double> solver_out_ = mpc.Solve(state, coeffs);
           
-          double steer_value = output_[1];
-          double throttle_value = output_[0];
+          // provid the actuator values
+          double steer_value = solver_out[0];
+          double throttle_value = solver_out[1];
 
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = -1.0 * steer_value / deg2rad(25);
           msgJson["throttle"] = throttle_value;
 
-          //Display the MPC predicted trajectory 
+          //display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
 
+          // reserve the memory to avoid reallocation by each pushback, since the size is known
+          int vec_size = solver_out.size() / 2 - 1;
+
+          mpc_x_vals.reserve(vec_size);
+          mpc_y_vals.reserve(vec_size);
+
+          // save the coordinates of the predicted trajectory in the special vectors
+          for (int i=1; i < (vec_size + 1); ++i){
+              mpc_x_vals.push_back(solver_out[2*i]);
+              mpc_y_vals.push_back(solver_out[2*i + 1]);
+          }
+
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
 
@@ -161,9 +172,9 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
 
-          for (int i = 0; i < 100; i += 3){
-            next_x_vals.push_back(i);
-            next_y_vals.push_back(polyeval(coeffs, i));
+          for (int i = 0; i < ptsx.size(); ++i){
+            next_x_vals.push_back(ref_x[i]);
+            next_y_vals.push_back(ref_y[i]);
           }
           
           msgJson["next_x"] = next_x_vals;
