@@ -121,7 +121,7 @@ int main() {
 
           std::cout << "fit done "<< coeffs << std::endl;
 
-          // calculate the next state vector
+          // calculate the initial state vector
           double dt = 0.1; 
           double x_proj = v*dt;
           double y_proj = 0.0;
