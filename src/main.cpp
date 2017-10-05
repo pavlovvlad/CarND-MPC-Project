@@ -148,7 +148,9 @@ int main() {
           vector<double> mpc_y_vals;
 
           // reserve the memory to avoid reallocation by each pushback, since the size is known
-          int vec_size = solver_out.size() / 2 - 1;
+          size_t vec_size = solver_out.size()/2 - 1;
+
+          std::cout << "solved!!! "<< vec_size << std::endl;
 
           mpc_x_vals.reserve(vec_size);
           mpc_y_vals.reserve(vec_size);
@@ -167,6 +169,9 @@ int main() {
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
+
+          next_x_vals.reserve(ptsx.size());
+          next_y_vals.reserve(ptsx.size());
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
