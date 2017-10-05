@@ -99,6 +99,7 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          std::cout << "msg processed "<< throttle << std::endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -108,7 +109,7 @@ int main() {
           Eigen::VectorXd ref_y(6);
 
           // transform coordinates of the trajectory relative to the car position & orientation
-          for (size_t i = 0; i < ptsx.size(); i++){
+          for (size_t i = 0; i < ptsx.size(); ++i){
               ref_x[i] = (ptsx[i] - px)*cos(-psi) - (ptsy[i] - py)*sin(-psi);
               ref_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
           }
