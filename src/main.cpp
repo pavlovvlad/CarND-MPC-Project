@@ -114,14 +114,17 @@ int main() {
               ref_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
           }
 
+          std::cout << "transform done "<< ptsx.size() << std::endl;
+
           // fit polynomial 3rd order
           auto coeffs = polyfit(ref_x, ref_y, 3); 
 
+          std::cout << "fit done "<< coeffs << std::endl;
 
           // calculate the next state vector
           double dt = 0.1; 
           double x_proj = v*dt;
-          double y_proj = 0;
+          double y_proj = 0.0;
           double Lf = 2.67;
           double psi_proj = -v*steering_angle/Lf*dt;
           
@@ -134,6 +137,7 @@ int main() {
 
           state << x_proj, y_proj, psi_proj, v, cte, epsi;
 
+          std::cout << "state vector "<< state << std::endl;
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);
           
