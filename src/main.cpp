@@ -104,8 +104,8 @@ int main() {
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
 
-          Eigen::VectorXd ref_x(ptsx.size());
-          Eigen::VectorXd ref_y(ptsx.size());
+          Eigen::VectorXd ref_x(6);
+          Eigen::VectorXd ref_y(6);
 
           // transform coordinates of the trajectory relative to the car position & orientation
           for (size_t i = 0; i < ptsx.size(); i++){
