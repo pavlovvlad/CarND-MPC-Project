@@ -92,6 +92,7 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
           double steering_angle = j[1]["steering_angle"];
+          double throttle = j[1]["throttle"];
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
@@ -137,10 +138,10 @@ int main() {
           
           // provide the actuator values
           steering_angle = solver_out[0];
-          double throttle_value = solver_out[1];
+          throttle = solver_out[1];
 
           msgJson["steering_angle"] = -1.0 * steering_angle / deg2rad(25);
-          msgJson["throttle"] = throttle_value;
+          msgJson["throttle"] = throttle;
 
           //display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
