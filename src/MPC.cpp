@@ -55,9 +55,9 @@ class FG_eval {
 
     // add scale factors for penalty by cte, actuators
     double cte_scale = 3000.0;
-    double epsi_scale = 3000.0;
+    double epsi_scale = 500.0;
     double a_scale = 1.0;
-    double delta_scale = 400.0;
+    double delta_scale = 1.0;
     double a1_scale = 1.0;
     double delta1_scale = 200.0;
 
