@@ -109,8 +109,8 @@ int main() {
 
           // transform coordinates of the trajectory relative to the car position & orientation
           for (size_t i = 0; i < ptsx.size(); ++i){
-              ref_x[i] = (ptsx[i] - px)*cos(-psi) - (ptsy[i] - py)*sin(-psi);
-              ref_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
+              ref_x[i] = (ptsx[i] - px)*cos(psi) + (ptsy[i] - py)*sin(psi);
+              ref_y[i] = -(ptsx[i] - px)*sin(psi) + (ptsy[i] - py)*cos(psi);
           }
 
           // fit polynomial 3rd order

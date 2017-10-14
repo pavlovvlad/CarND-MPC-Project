@@ -6,7 +6,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 10;
+size_t N = 15;
 double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
@@ -59,7 +59,7 @@ class FG_eval {
     double a_scale = 1.0;
     double delta_scale = 400.0;
     double a1_scale = 1.0;
-    double delta1_scale = 2000.0;
+    double delta1_scale = 200.0;
 
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < N; ++t) {
