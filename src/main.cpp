@@ -128,7 +128,7 @@ int main() {
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
           double epsi_proj = epsi + psi_proj;
-          double cte_proj = cte + v * sin(epsi) * latency;
+          double cte_proj = cte + y_proj;
 
           // State
           Eigen::VectorXd state(6);
