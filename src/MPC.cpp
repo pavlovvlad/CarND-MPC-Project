@@ -54,12 +54,12 @@ class FG_eval {
     fg[0] = 0;
 
     // add scale factors for penalty by cte, actuators
-    double cte_scale = 10.0;
+    double cte_scale = 1.0;
     double epsi_scale = 1.0;
     double a_scale = 1.0;
     double delta_scale = 1.0;
     double a1_scale = 1.0;
-    double delta1_scale = 800.0;
+    double delta1_scale = 2000.0;
 
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < N; ++t) {
