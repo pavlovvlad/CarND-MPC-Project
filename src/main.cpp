@@ -118,22 +118,22 @@ int main() {
 
           // calculate the initial state vector (to model the latency)
           double latency = 0.1; 
-          double x_proj = 0; //v * latency;
+          double x_proj = v * latency;
           double y_proj = 0.0;
           double Lf = 2.67;
-          double psi_proj = 0; //-v * (steering_angle/ Lf) * latency;
-          double v_proj = 0; //v + throttle * latency;
+          double psi_proj = -v * (steering_angle/ Lf) * latency;
+          double v_proj = v + throttle * latency;
 
           // cte and epsi
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
-          double epsi_proj = 0;//epsi + psi_proj;
-          double cte_proj = 0;//cte + v * sin(epsi) * latency;
+          double epsi_proj = epsi + psi_proj;
+          double cte_proj = cte + v * sin(epsi) * latency;
 
           // State
           Eigen::VectorXd state(6);
 
-          state << x_proj, y_proj, psi_proj, v, cte, epsi;
+          state << x_proj, y_proj, psi_proj, v_proj, cte_proj, epsi_proj;
 
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);
