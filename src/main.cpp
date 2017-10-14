@@ -116,24 +116,26 @@ int main() {
           // fit polynomial 3rd order
           auto coeffs = polyfit(ref_x, ref_y, 3); 
 
+          // cte and epsi
+          double cte = polyeval(coeffs, 0);
+          double epsi = -atan(coeffs[1]);
+
           // calculate the initial state vector (to model the latency)
-          double latency = 0.1; 
+          /*double latency = 0.1; 
           double x_proj = v * cos(-psi) * latency;
           double y_proj = v * sin(-psi) * latency;
           double Lf = 2.67;
           double psi_proj = v * (steering_angle/ Lf) * latency;
           double v_proj = v; // assume that the acceleration has no big influence on the values
-
-          // cte and epsi
-          double cte = polyeval(coeffs, 0);
-          double epsi = -atan(coeffs[1]);
           double epsi_proj = epsi + psi_proj;
           double cte_proj = cte + v * sin(epsi) * latency;
-
+          */
+          
           // State
           Eigen::VectorXd state(6);
 
           //state << x_proj, y_proj, psi_proj, v_proj, cte_proj, epsi_proj;
+
           state << 0, 0, 0, v, cte, epsi;
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);

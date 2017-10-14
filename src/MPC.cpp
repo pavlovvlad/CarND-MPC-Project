@@ -269,6 +269,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // creates a 2 element double vector.
   vector<double> result;
 
+  // to model the latency use the next value for actuators
   result.push_back(solution.x[delta_start + 1]);
   result.push_back(solution.x[a_start + 1]);
   
