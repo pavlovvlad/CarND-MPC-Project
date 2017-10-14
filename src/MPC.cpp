@@ -269,8 +269,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // creates a 2 element double vector.
   vector<double> result;
 
-  result.push_back(solution.x[delta_start]);
-  result.push_back(solution.x[a_start]);
+  result.push_back(solution.x[delta_start + 1]);
+  result.push_back(solution.x[a_start + 1]);
   
   // return additional x,y coordinates of the predicted trajectory
   for (size_t i = 0; i < N; ++i) {

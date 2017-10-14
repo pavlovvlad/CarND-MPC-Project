@@ -122,7 +122,7 @@ int main() {
           double y_proj = v * sin(-psi) * latency;
           double Lf = 2.67;
           double psi_proj = v * (steering_angle/ Lf) * latency;
-          double v_proj = v + throttle * latency; // assume that the acceleration has no big influence on the values
+          double v_proj = v; // assume that the acceleration has no big influence on the values
 
           // cte and epsi
           double cte = polyeval(coeffs, 0);
@@ -133,8 +133,8 @@ int main() {
           // State
           Eigen::VectorXd state(6);
 
-          state << x_proj, y_proj, psi_proj, v_proj, cte_proj, epsi_proj;
-
+          //state << x_proj, y_proj, psi_proj, v_proj, cte_proj, epsi_proj;
+          state << 0, 0, 0, v, cte, epsi;
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);
           
