@@ -1,5 +1,45 @@
 # CarND-Controls-MPC
 Self-Driving Car Engineer Nanodegree Program
+---
+# Implementation
+
+## The Model
+The global kinematic model which determines the next state at t+1 from state vector and actuator values at t. 
+- The state vector consists in _x_ and _y_ coordinates, orientation angle _ψ_, velocity _v_, cross-track error _cte_ and error in orientation _eψ_ (difference of vehicle orientation and trajectory orientation).
+
+- Actuator values are: acceleration a and steering angle δ.
+
+Update equations:
+
+x_t+1_​= x_t_​+ v_t_​* cos(ψ_t_) * dt
+
+y_t+1_​= y_t_​+ v_t_​* sin(ψ_t_) * dt
+
+ψ_t+1_​= ψ_t_​+​v_t_​* δ * dt / Lf​
+
+v_t+1_​= v_t_​+ a_t_​* dt
+
+cte_t+1_ = y_t_​+ v_t_​* sin(ψ_t_) * dt
+
+eψ_t+1 = ψ_t_​- ψ_des_t_ +​v_t_​* δ * dt / Lf
+
+where _Lf_​denotes the distance between the front of the vehicle and its center of gravity. The larger the vehicle , the slower the turn rate.
+ψ_des_ - desired orientation.
+
+## Timestep Length and Elapsed Duration (N & dt) 
+Timestep Length _dt_ and Elapsed Duration _N_ define the prediction horizon _T_. The prediction horizon T is restricted by the assumption about the alterability of environment, it could be the traffic density (by lane changes) or road geometry. Since we have no traffic on the given track, the restrictions of environment is based on the road geometry like turn-maneuver or maneuver in s-curves (difficult to fit with polynomial of 3rd order). 
+
+Under assumption that the ego-car drives in curves with the radius not smaller then 50m, where the turn sector with the same radius is at least 15 deg (arc length = approx. 13m) and that ego-velocity < 10m/s, the prediction horizon T = 1 sec seems to be an optimal choise. 
+
+By manual tuning the combination of N = 10 [steps] and dt = 0.1 [s] seems to have a good proportion where there are enough actuations in trajectory to approximate a reference trajectory. By choosing smaller dt like 0.05[s] / N = 20 [steps] the system needs more time for the calculation, by bigger dt like 0.2[s] by N=5 [steps] the car has a higher discretization error to the reference trajectory and the car reacts to late in the curves.   
+
+## Polynomial Fitting and MPC Preprocessing
+To simplify the fitting with polynomials before applying MPC, the transformation of the waypoints of reference trajectory to the vehicle coordinate system has been done. So the first waypoint is in (0, 0) with the orientation angle equal 0.
+
+## Model Predictive Control with Latency
+Due to latency in the system the commands with the steer and acceleration vectors are provided to the actuators with the delay. This issue leads to overcome = the car drives out of the road. To avoid this effect the state vector has been predicted to the timestamp + assumed value of the latency (100ms) (s. lines 120-124 in main.cpp).
+ 
+To smooth the steering transitions tuning of the penalties in the cost function of MPC have been done.
 
 ---
 

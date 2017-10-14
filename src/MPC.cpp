@@ -6,7 +6,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 7;
+size_t N = 10;
 double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
@@ -25,7 +25,6 @@ const double Lf = 2.67;
 // The reference velocity is set to 70 mph.
 double ref_v = 70;
 
-// CHECK:
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
 // when one variable starts and another ends to make our lifes easier.
@@ -54,23 +53,31 @@ class FG_eval {
     // Any additions to the cost should be added to `fg[0]`.
     fg[0] = 0;
 
+    // add scale factors for penalty by cte, actuators
+    double cte_scale = 3000.0;
+    double epsi_scale = 1.0;
+    double a_scale = 1.0;
+    double delta_scale = 1.0;
+    double a1_scale = 1.0;
+    double delta1_scale = 1000.0;
+
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < N; ++t) {
-      fg[0] += CppAD::pow(vars[cte_start + t], 2);
-      fg[0] += CppAD::pow(vars[epsi_start + t], 2);
+      fg[0] += cte_scale * CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += epsi_scale * CppAD::pow(vars[epsi_start + t], 2);
       fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
     for (size_t t = 0; t < N - 1; ++t) {
-      fg[0] += CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[a_start + t], 2);
+      fg[0] += delta_scale * CppAD::pow(vars[delta_start + t], 2);
+      fg[0] += a_scale * CppAD::pow(vars[a_start + t], 2);
     }
 
     // Minimize the value gap between sequential actuations.
     for (size_t t = 0; t < N - 2; ++t) {
-      fg[0] += CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+      fg[0] += delta1_scale * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += a1_scale * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
     }
 
     //
@@ -204,9 +211,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     constraints_upperbound[i] = 0;
   }
 
-  std::cout << "limits for constraints set "<< std::endl;
-
-  // CHECK:
+  // lower and upper bounds are set to be equal
   constraints_lowerbound[x_start] = x;
   constraints_lowerbound[y_start] = y;
   constraints_lowerbound[psi_start] = psi;
@@ -224,7 +229,6 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // object that computes objective and constraints
   FG_eval fg_eval(coeffs);
 
-  std::cout << "constraints set " << std::endl;
   //
   // NOTE: You don't have to worry about these options
   //
@@ -251,13 +255,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
       options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
       constraints_upperbound, fg_eval, solution);
 
-  std::cout << "solve the problem " << std::endl;
-
   // Check some of the solution values
   ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
   
-  std::cout << " check the solver result done " << std::endl;
-
   // Cost
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << std::endl;

@@ -99,7 +99,6 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          std::cout << "msg processed "<< throttle << std::endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -114,21 +113,17 @@ int main() {
               ref_y[i] = (ptsx[i] - px)*sin(-psi) + (ptsy[i] - py)*cos(-psi);
           }
 
-          std::cout << "transform done "<< ptsx.size() << std::endl;
-
           // fit polynomial 3rd order
           auto coeffs = polyfit(ref_x, ref_y, 3); 
 
-          std::cout << "fit done "<< coeffs << std::endl;
-
-          // calculate the initial state vector
-          double dt = 0.1; 
-          double x_proj = v*dt;
+          // calculate the initial state vector (to model the latency)
+          double latency = 0.1; 
+          double x_proj = v*latency;
           double y_proj = 0.0;
           double Lf = 2.67;
-          double psi_proj = -v*steering_angle/Lf*dt;
-          
-          // CTE and EPSI
+          double psi_proj = -v*steering_angle/Lf*latency;
+
+          // cte and epsi
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
 
@@ -137,7 +132,6 @@ int main() {
 
           state << x_proj, y_proj, psi_proj, v, cte, epsi;
 
-          std::cout << "state vector "<< state << std::endl;
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);
           
@@ -154,8 +148,6 @@ int main() {
 
           // reserve the memory to avoid reallocation by each pushback, since the size is known
           size_t vec_size = solver_out.size()/2 - 1;
-
-          std::cout << "solved!!! "<< vec_size << std::endl;
 
           mpc_x_vals.reserve(vec_size);
           mpc_y_vals.reserve(vec_size);
