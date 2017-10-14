@@ -133,7 +133,7 @@ int main() {
           // State
           Eigen::VectorXd state(6);
 
-          state << x_proj, y_proj, psi_proj, v_proj, cte_proj, epsi_proj;
+          state << x_proj, y_proj, psi_proj, v, cte, epsi;
 
           // apply mpc-solver to the state-vector
           vector<double> solver_out = mpc.Solve(state, coeffs);
