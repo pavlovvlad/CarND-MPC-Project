@@ -89,7 +89,7 @@ class FG_eval {
     fg[1 + v_start] = vars[v_start];
     fg[1 + cte_start] = vars[cte_start];
     fg[1 + epsi_start] = vars[epsi_start];
-
+    
     // The rest of the constraints
     for (size_t t = 1; t < N; t++) {
       // The state at time t+1 .
@@ -112,8 +112,8 @@ class FG_eval {
       AD<double> delta0 = vars[delta_start + t - 1];
       AD<double> a0 = vars[a_start + t - 1];
 
-      AD<double> f0 = coeffs[0] + coeffs[1] * x0;
-      AD<double> psides0 = CppAD::atan(coeffs[1]);
+      AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * pow(x0, 2) + coeffs[3] * pow(x0, 3);
+      AD<double> psides0 = CppAD::atan(coeffs[1] + (2 * coeffs[2] * x0) + (3 * coeffs[3] * pow(x0, 2)));
 
       // Here's `x` to get you started.
       // The idea here is to constraint this value to be 0.
@@ -203,6 +203,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
+
+  std::cout << "limits for constraints set "<< std::endl;
+
   // CHECK:
   constraints_lowerbound[x_start] = x;
   constraints_lowerbound[y_start] = y;
@@ -221,6 +224,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // object that computes objective and constraints
   FG_eval fg_eval(coeffs);
 
+  std::cout << "constraints set " << std::endl;
   //
   // NOTE: You don't have to worry about these options
   //
@@ -247,8 +251,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
       options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
       constraints_upperbound, fg_eval, solution);
 
+  std::cout << "solve the problem " << std::endl;
+
   // Check some of the solution values
   ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
+  
+  std::cout << " check the solver result done " << std::endl;
 
   // Cost
   auto cost = solution.obj_value;
