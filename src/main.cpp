@@ -118,11 +118,11 @@ int main() {
 
           // calculate the initial state vector (to model the latency)
           double latency = 0.1; 
-          double x_proj = v * latency;
-          double y_proj = 0.0;
+          double x_proj = v * cos(-psi) * latency;
+          double y_proj = v * sin(-psi) * latency;
           double Lf = 2.67;
           double psi_proj = -v * (steering_angle/ Lf) * latency;
-          double v_proj = v + throttle * latency;
+          double v_proj = v;
 
           // cte and epsi
           double cte = polyeval(coeffs, 0);
