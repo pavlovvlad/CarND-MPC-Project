@@ -121,14 +121,14 @@ int main() {
           double x_proj = v * cos(-psi) * latency;
           double y_proj = v * sin(-psi) * latency;
           double Lf = 2.67;
-          double psi_proj = -v * (steering_angle/ Lf) * latency;
-          double v_proj = v; // assume that the acceleration has no big influence on the values
+          double psi_proj = v * (steering_angle/ Lf) * latency;
+          double v_proj = v + throttle * latency; // assume that the acceleration has no big influence on the values
 
           // cte and epsi
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
           double epsi_proj = epsi + psi_proj;
-          double cte_proj = cte + y_proj;
+          double cte_proj = cte + v * sin(epsi) * dt;
 
           // State
           Eigen::VectorXd state(6);
