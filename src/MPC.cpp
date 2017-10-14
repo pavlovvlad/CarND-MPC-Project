@@ -23,7 +23,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 70 mph.
-double ref_v = 70;
+double ref_v = 50;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -59,7 +59,7 @@ class FG_eval {
     double a_scale = 1.0;
     double delta_scale = 400.0;
     double a1_scale = 1.0;
-    double delta1_scale = 500.0;
+    double delta1_scale = 2000.0;
 
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < N; ++t) {
