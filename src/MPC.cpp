@@ -29,7 +29,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 70 mph.
-double ref_v = 50;
+double ref_v = 70;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -289,6 +289,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // save values after solving MPC to constraint the first actuator value to its previous value
   prev_delta = solution.x[delta_start+fixed_steps];
   prev_a = solution.x[a_start+fixed_steps];
+
   // return the second (index 1) actuator values instead of the first (index) from MPC solver to avoid influence of the latency
   result.push_back(solution.x[delta_start + 1]);
   result.push_back(solution.x[a_start + 1]);
