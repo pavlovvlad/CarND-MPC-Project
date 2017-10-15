@@ -7,7 +7,13 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 size_t N = 10;
-double dt = 0.1;
+double dt = 0.1; // in msec
+double latency = 0.1; // in msec
+
+//definie the timestep to constraint and variables to save actuator values
+size_t fixed_steps = latency/dt;
+static double prev_a = 0;
+static double prev_delta = 0;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -202,6 +208,17 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     vars_upperbound[i] = 1.0;
   }
 
+  // set constraints in MPC:Solve()
+  for (int i = delta_start; i < delta_start + fixed_steps; i++) {
+    vars_lowerbound[i] = prev_delta;
+    vars_upperbound[i] = prev_delta;
+  }
+
+  for (int i = a_start; i < a_start + fixed_steps; i++) {
+    vars_lowerbound[i] = prev_a;
+    vars_upperbound[i] = prev_a;
+  }
+
   // Lower and upper limits for the constraints
   // Should be 0 besides initial state.
   Dvector constraints_lowerbound(n_constraints);
@@ -268,10 +285,13 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
   vector<double> result;
-
-  // to model the latency use the next value for actuators
-  result.push_back(solution.x[delta_start + 1]);
-  result.push_back(solution.x[a_start + 1]);
+  
+  // save values after solving MPC to constraint the first actuator value to its previous value
+  prev_delta = solution.x[delta_start+fixed_steps];
+  prev_a = solution.x[a_start+fixed_steps];
+  
+  result.push_back(solution.x[delta_start]);
+  result.push_back(solution.x[a_start]);
   
   // return additional x,y coordinates of the predicted trajectory
   for (size_t i = 0; i < N; ++i) {
