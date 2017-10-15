@@ -289,9 +289,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // save values after solving MPC to constraint the first actuator value to its previous value
   prev_delta = solution.x[delta_start+fixed_steps];
   prev_a = solution.x[a_start+fixed_steps];
-  
-  result.push_back(solution.x[delta_start]);
-  result.push_back(solution.x[a_start]);
+  // return the second (index 1) actuator values instead of the first (index) from MPC solver to avoid influence of the latency
+  result.push_back(solution.x[delta_start + 1]);
+  result.push_back(solution.x[a_start + 1]);
   
   // return additional x,y coordinates of the predicted trajectory
   for (size_t i = 0; i < N; ++i) {
