@@ -11,19 +11,19 @@ The global kinematic model which determines the next state at t+1 from state vec
 
 Update equations:
 
-x_t+1_​= x_t_​+ v_t_​* cos(ψ_t_) * dt
+x_t+1_ = x_t_ + v_t_ * cos(ψ_t_) * dt
 
-y_t+1_​= y_t_​+ v_t_​* sin(ψ_t_) * dt
+y_t+1_ = y_t_ + v_t_ * sin(ψ_t_) * dt
 
-ψ_t+1_​= ψ_t_​+​v_t_​* δ * dt / Lf​
+ψ_t+1_ = ψ_t_ + v_t_ * δ * dt / Lf​
 
-v_t+1_​= v_t_​+ a_t_​* dt
+v_t+1_ = v_t_ + a_t_ * dt
 
-cte_t+1_ = y_t_​+ v_t_​* sin(ψ_t_) * dt
+cte_t+1_ = y_t_ + v_t_ * sin(ψ_t_) * dt
 
-eψ_t+1 = ψ_t_​- ψ_des_t_ +​v_t_​* δ * dt / Lf
+eψ_t+1 = ψ_t_ - ψ_des_t_ + v_t_ * δ * dt / Lf
 
-where _Lf_​denotes the distance between the front of the vehicle and its center of gravity. The larger the vehicle , the slower the turn rate.
+where _Lf_ denotes the distance between the front of the vehicle and its center of gravity. The larger the vehicle , the slower the turn rate.
 ψ_des_ - desired orientation.
 
 ## Timestep Length and Elapsed Duration (N & dt) 
@@ -37,7 +37,7 @@ By manual tuning the combination of N = 10 [steps] and dt = 0.1 [s] seems to hav
 To simplify the fitting with polynomials before applying MPC, the transformation of the waypoints of reference trajectory to the vehicle coordinate system has been done. So the first waypoint is in (0, 0) with the orientation angle equal 0.
 
 ## Model Predictive Control with Latency
-Due to latency in the system the commands with the steer and acceleration vectors are provided to the actuators with the delay. This issue leads to overcome = the car drives out of the road. To avoid this effect the state vector has been predicted to the timestamp + assumed value of the latency (100ms) (s. lines 120-124 in main.cpp).
+Due to latency in the system the commands with the steer and acceleration vectors are provided to the actuators with the delay. This issue leads to overcome = the car drives out of the road. To avoid this effect the state vector can be predicted to the timestamp + assumed value of the latency (100ms). But since the latency value 100ms is equal to choosen Timestep Length _dt_ = 100ms, then the second value of the actuator vectors have been send to actuators.
  
 To smooth the steering transitions tuning of the penalties in the cost function of MPC have been done.
 
